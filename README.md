@@ -1,5 +1,4 @@
 
-
 ## 1. Descripción General del Proyecto
 
 El objetivo es desarrollar un **microservicio backend** que proporcione funcionalidades esenciales de **autenticación de usuarios**.
@@ -57,7 +56,7 @@ Todos los endpoints deben estar bajo un prefijo común, por ejemplo:
 * **Ruta:** `/api/auth/register`
 * **Descripción:** Crea una nueva cuenta de usuario.
 
-#### 📥 Cuerpo de la petición (JSON):
+#### 📥 Cuerpo de la petición (JSON)
 
 ```json
 {
@@ -67,7 +66,7 @@ Todos los endpoints deben estar bajo un prefijo común, por ejemplo:
 }
 ```
 
-#### 🔄 Proceso del Servidor:
+#### 🔄 Proceso del Servidor
 
 1. Validar campos `username`, `email` y `password`.
 2. Verificar si el `email` ya existe (si existe → `409 Conflict`).
@@ -75,7 +74,7 @@ Todos los endpoints deben estar bajo un prefijo común, por ejemplo:
 4. Crear instancia de **User** con los datos y contraseña hasheada.
 5. Guardar usando el repositorio de TypeORM.
 
-#### ✔️ Respuesta Exitosa (201 Created):
+#### ✔️ Respuesta Exitosa (201 Created)
 
 ```json
 {
@@ -94,7 +93,7 @@ Todos los endpoints deben estar bajo un prefijo común, por ejemplo:
 * **Ruta:** `/api/auth/login`
 * **Descripción:** Autentica al usuario y retorna un token JWT.
 
-#### 📥 Cuerpo de la petición (JSON):
+#### 📥 Cuerpo de la petición (JSON)
 
 ```json
 {
@@ -103,7 +102,7 @@ Todos los endpoints deben estar bajo un prefijo común, por ejemplo:
 }
 ```
 
-#### 🔄 Proceso del Servidor:
+#### 🔄 Proceso del Servidor
 
 1. Buscar al usuario por email. Si no existe → `401 Unauthorized`.
 2. Comparar contraseña ingresada con hash almacenado (`bcrypt.compare()`).
@@ -115,7 +114,7 @@ Todos los endpoints deben estar bajo un prefijo común, por ejemplo:
    * **Secreto:** desde variables de entorno.
    * **Expiración:** `1 día (24h)`.
 
-#### ✔️ Respuesta Exitosa (200 OK):
+#### ✔️ Respuesta Exitosa (200 OK)
 
 ```json
 {
