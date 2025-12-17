@@ -7,7 +7,7 @@ import { User } from "./entities/user.entity";
 import { AppDataSource } from './utils/app-data-source';
 
 
- const startServer = async () => {
+const startServer = async () => {
 	try {
 		await AppDataSource.initialize();
 		console.log("Data Source has been initialized!");
@@ -41,7 +41,7 @@ app.get("/users", async (req: Request, res: Response) => {
 });
 
 app.get("/users/:id", async (req: Request, res: Response) => {
-	const userId = parseInt(req.params.id, 10);
+	const userId = req.params.id;
 	try {
 		const userRepository = AppDataSource.getRepository(User);	
 		const user =  await userRepository.findOneBy({id: userId});
@@ -69,14 +69,28 @@ app.post("/users", async (req: Request, res: Response) => {
 		});
 		await userRepository.save(newUser);
 		res.status(201).json(newUser);
-	} catch (error) {
-		console.error("Error creating user:", error);
-		res.status(500).json({ message: "Internal server error" });
+	} catch (error:any) {
+		switch (error.number) {
+			case 23505: // Unique violation error code for PostgreSQL
+				res.status(409).json({ message: "Username or email already exists" });
+				break;
+			case 2627: // Unique violation error code for MSSQL
+				console.log("Unique constraint violation:", error.message);
+				res.status(409).json({ message: "Username or email already exists" });
+				break;
+			case 515: // Cannot insert the value NULL error code for MSSQL
+				console.error("Cannot insert NULL value:", error.message);
+				res.status(400).json({ message: "Missing required fields" });
+				break;
+			default:
+				console.error("Error creating user:", error);
+				res.status(500).json({ message: "Internal server error" });
+		}
 	}
 })
 
 app.put("/users/:id", async (req: Request, res: Response) => {
-	const userId = parseInt(req.params.id, 10);
+	const userId = req.params.id;
 	const { username, email, password } = req.body;
 	try {
 		const userRepository = AppDataSource.getRepository(User);	
@@ -98,7 +112,7 @@ app.put("/users/:id", async (req: Request, res: Response) => {
 
 
 app.delete("/users/:id", async (req: Request, res: Response) => {
-	const userId = parseInt(req.params.id, 10);
+	const userId = req.params.id;
 	try {
 		const userRepository = AppDataSource.getRepository(User);	
 		const user = await userRepository.findOneBy({id: userId});

@@ -1,4 +1,5 @@
 import {DataSource} from 'typeorm';
+import { User } from '../entities/user.entity';
 
 
 export const AppDataSource = new DataSource({
@@ -9,7 +10,8 @@ export const AppDataSource = new DataSource({
     password:process.env.DB_PASSWORD,
     database:process.env.DB_DATABASE,
     synchronize:true,
-    logging:true,  // Enable to see SQL queries for debugging
+    logging:false,  // Enable to see SQL queries for debugging
+    entities: [User],  
     options: {
         instanceName: process.env.DB_INSTANCE,
         trustServerCertificate: true,  // Required for local development
