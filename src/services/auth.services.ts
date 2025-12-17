@@ -35,10 +35,6 @@ export const registerUser = async (
             throw new DuplicateError("Username already in use");
         }
 
-        // check if user has sent a password
-        if (!sanitizedPassword) {
-            throw new ValidationError("Password is required");
-        }
 
         // Hash the password
         const hashedPassword = await hashPassword(sanitizedPassword);

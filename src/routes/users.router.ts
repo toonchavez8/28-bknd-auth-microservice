@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import { AppDataSource } from "../utils/app-data-source";
 import { User } from "../entities/user.entity";
 import chalk from "chalk";
-import { register } from "node:module";
 import { registerUser } from "../services/auth.services";
 import { DatabaseError, DuplicateError, ValidationError } from "../utils/error-classes";
 
