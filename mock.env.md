@@ -1,0 +1,9 @@
+PORT=4321
+DB_HOST=Hostname_or_IP
+DB_PORT=PORT_NUMBER
+DB_INSTANCE="InstanceName"
+DB_DATABASE="DB Name"
+DB_USERNAME="Username"
+DB_PASSWORD="Password"
+JWT_SECRET="your_jwt_secret_key"
+JWT_EXPIRATION="24h"
