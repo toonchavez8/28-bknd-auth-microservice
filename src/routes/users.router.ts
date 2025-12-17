@@ -1,8 +1,7 @@
 import { Request, Response, Router } from "express";
 import { AppDataSource } from "../utils/app-data-source";
 import { User } from "../entities/user.entity";
-
-
+import chalk from "chalk";
 
 const router = Router();
 
@@ -11,8 +10,9 @@ router.get("/", async (req: Request, res: Response) => {
             const userRepository = AppDataSource.getRepository(User);	
             const users =  await userRepository.find();
             res.json(users);
+            console.log(chalk.blueBright("Fetched all users successfully"));
         } catch (error) {
-            console.error("Error fetching users:", error);
+            console.error(chalk.red("Error fetching users:", error));
             res.status(500).json({ message: "Internal server error" });
         }	
 })
