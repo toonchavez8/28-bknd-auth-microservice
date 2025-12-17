@@ -2,6 +2,9 @@ import { Request, Response, Router } from "express";
 import { AppDataSource } from "../utils/app-data-source";
 import { User } from "../entities/user.entity";
 import chalk from "chalk";
+import { register } from "node:module";
+import { registerUser } from "../services/auth.services";
+import { DatabaseError, DuplicateError, ValidationError } from "../utils/error-classes";
 
 const router = Router();
 
@@ -36,35 +39,29 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
     try {
-        const userRepository = AppDataSource.getRepository(User);	
-        const newUser = userRepository.create({
-            username,
-            email,
-            password,
-            createdAt: new Date()
-        });
-        await userRepository.save(newUser);
-        res.status(201).json(newUser);
-    } catch (error:any) {
-        switch (error.number) {
-            case 23505: // Unique violation error code for PostgreSQL
-                res.status(409).json({ message: "Username or email already exists" });
-                break;
-            case 2627: // Unique violation error code for MSSQL
-                console.error("Unique constraint violation:", error.message);
-                res.status(409).json({ message: "Username or email already exists" });
-                break;
-            case 515: // Cannot insert the value NULL error code for MSSQL
-                console.error("Cannot insert NULL value:", error.message);
-                res.status(400).json({ message: "Missing required fields" });
-                break;
-            default:
-                console.error("Error creating user:", error);
-                res.status(500).json({ message: "Internal server error" });
+        const result = await registerUser(username, email, password);
+        console.log(chalk.green(`User registered successfully: ${email}`));
+        res.status(201).json(result);
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            console.log(chalk.yellow(`Validation error: ${error.message}`));
+            return res.status(400).json({ message: error.message });
         }
+        
+        if (error instanceof DuplicateError) {
+            console.log(chalk.yellow(`Duplicate error: ${error.message}`));
+            return res.status(409).json({ message: error.message });
+        }
+        
+        if (error instanceof DatabaseError) {
+            console.error(chalk.red(`Database error: ${error.message}`));
+            return res.status(500).json({ message: "Internal server error" });
+        }
+        
+        console.error(chalk.red("Unexpected error registering user:", error));
+        res.status(500).json({ message: "Internal server error" });
     }
 })
-
 router.put("/:id", async (req: Request, res: Response) => {
     const userId = req.params.id;
     const { username, email, password } = req.body;

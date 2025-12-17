@@ -3,7 +3,7 @@ import { AppDataSource } from "../utils/app-data-source";
 import { User } from "../entities/user.entity";
 import { validateUserInput } from "../utils/validation-help";
 import {  DatabaseError, DuplicateError, ValidationError } from "../utils/error-classes";
-import { hashPassword } from '../utils/helper-functions';
+import { comparePassword, generateToken, hashPassword } from '../utils/helper-functions';
 
 
 
@@ -33,6 +33,11 @@ export const registerUser = async (
         const existingUserByUsername = await userRepository.findOneBy({ username: sanitizedUsername });
         if (existingUserByUsername) {
             throw new DuplicateError("Username already in use");
+        }
+
+        // check if user has sent a password
+        if (!sanitizedPassword) {
+            throw new ValidationError("Password is required");
         }
 
         // Hash the password
@@ -70,9 +75,53 @@ export const registerUser = async (
     }
 };
 
-export const loginUser = async (username: string, password: string): Promise<User | null> => {
+export const loginUser = async (username: string, password: string): Promise<{accessToken: string, tokenType: string, expiresIn: string }> => {
+try {
+    if (!username || !password) {
+        throw new ValidationError("Username and password are required");
+    }
+    // sananisted inputs
+    const sanitizedUsername = username.trim().toLowerCase();
+    const sanitizedPassword = password.trim();
+
+    // Find user by username
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOneBy({ username, password });
-    return user || null;
-};
+    const user = await userRepository.findOneBy({ username: sanitizedUsername });
+     if (!user) {
+        throw new ValidationError("Invalid username or password");
+    }
+
+
+    // compare passwords
+    const isPasswordValid = await comparePassword(sanitizedPassword, user.password);
+
+    if (!isPasswordValid) {
+        throw new ValidationError("password is incorrect");
+    }
+
+    // Generate access token
+    const accessToken = generateToken(user);
+
+    return {
+        accessToken,
+        tokenType: "Bearer",
+        expiresIn: `${process.env.JWT_EXPIRATION || 24}h`
+    };
+
+} catch (error) {
+    // Re-throw custom errors
+        if (error instanceof ValidationError || 
+            error instanceof DuplicateError ) {
+            throw error;
+        }
+        
+        // Handle database errors
+        if (error instanceof Error) {
+            throw new DatabaseError(`Failed to register user: ${error.message}`);
+        }
+        
+        // Unknown error
+        throw new DatabaseError("An unexpected error occurred during registration");
+    }
+}
 
