@@ -7,6 +7,7 @@ dotenv.config();
 import { AppDataSource } from './utils/app-data-source';
 import usersRouter from "./routes/users.router";
 import authRouter from "./routes/auth.router";
+import { errorHandler } from "./middleware/error-handler.middleware";
 
 const app = express();
 
@@ -17,6 +18,9 @@ const PORT = process.env.PORT || 3000;
 // Mount routers BEFORE the conditional server start
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
+
+// Error handler must be last
+app.use(errorHandler);
 
 // Only start server if not in test environment
 if (process.env.NODE_ENV !== 'test') {
