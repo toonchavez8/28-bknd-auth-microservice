@@ -1,24 +1,23 @@
-// src/entities/user.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import "reflect-metadata";
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn("uuid")
-    id: string;
+    id!: string;
 
-    @Column({  unique: true })
-    username: string;
+    @Column({ type: "varchar", length: 255, unique: true })
+    username!: string;
 
-    @Column({  unique: true })
-    email: string;
+    @Column({ type: "varchar", length: 255, unique: true })
+    email!: string;
 
-    @Column()
-    password: string;
+    @Column({ type: "varchar", length: 255 })
+    password!: string;
 
     @CreateDateColumn()
-    createdAt: Date;
+    createdAt!: Date;
 
     @UpdateDateColumn()
-    updatedAt: Date;
+    updatedAt!: Date;
 }

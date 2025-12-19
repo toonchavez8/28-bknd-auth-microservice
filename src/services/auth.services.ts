@@ -15,8 +15,8 @@ export const registerUser = async (
     try {
         validateUserInput(username, email, password);
         
-        // sanitize inputs
-        const sanitizedUsername = username.trim();
+        // sanitize inputs - normalize username to lowercase for consistency
+        const sanitizedUsername = username.trim().toLowerCase();
         const sanitizedEmail = email.trim().toLowerCase();
         const sanitizedPassword = password.trim();
 
@@ -24,7 +24,7 @@ export const registerUser = async (
         
 
         // Check for existing user with the same email
-        const existingUserByEmail   = await userRepository.findOneBy({ email: sanitizedEmail });
+        const existingUserByEmail = await userRepository.findOneBy({ email: sanitizedEmail });
         if (existingUserByEmail){
             throw new DuplicateError("Email already in use");
         }
@@ -35,11 +35,10 @@ export const registerUser = async (
             throw new DuplicateError("Username already in use");
         }
 
-
         // Hash the password
         const hashedPassword = await hashPassword(sanitizedPassword);
 
-        // crete new user entity
+        // create new user entity
         const newUser = userRepository.create({
             username: sanitizedUsername,
             email: sanitizedEmail,
@@ -55,7 +54,7 @@ export const registerUser = async (
         };
 
     } catch (error) {
-     // Re-throw custom errors
+        // Re-throw custom errors
         if (error instanceof ValidationError || 
             error instanceof DuplicateError) {
             throw error;

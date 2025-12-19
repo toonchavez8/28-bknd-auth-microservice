@@ -1,11 +1,13 @@
 
 import {DataSource} from 'typeorm';
 import { User } from '../entities/user.entity';
+import { config } from 'dotenv';
 
+config();
 
 export const AppDataSource = new DataSource({
     type:"mssql",
-    host:process.env.DB_HOST,
+    host: process.env.DB_HOST || "localhost", 
     port:process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 1433,
     username:process.env.DB_USERNAME,
     password:process.env.DB_PASSWORD,

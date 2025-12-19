@@ -12,7 +12,8 @@
 		"dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
 		"build": "tsc",
 		"serve": "node dist/index.js",
-		"clean": "rm -rf node_modules dist package-lock.json"
+		"clean": "rm -rf node_modules dist package-lock.json",
+		"reset-db": "ts-node -r tsconfig-paths/register src/utils/reset-db.ts"
 	},
 	"repository": {
 		"type": "git",
@@ -42,6 +43,7 @@
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^25.0.2",
 		"@types/supertest": "^6.0.3",
+		"@vitest/ui": "^4.0.16",
 		"supertest": "^7.1.4",
 		"ts-node": "^10.9.2",
 		"ts-node-dev": "^2.0.0",

@@ -7,12 +7,12 @@ const router = Router();
  * POST /api/auth/register
  * Register a new user
  */
-router.post("/api/auth/register", register);
+router.post("/register", register);
 
 /**
  * POST /api/auth/login
  * Authenticate user and return access token
  */
-router.post("/api/auth/login", login);
+router.post("/login", login);
 
 export default router;
