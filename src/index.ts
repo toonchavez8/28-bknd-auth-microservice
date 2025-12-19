@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import chalk from 'chalk';
 dotenv.config();
 
-import { User } from "./entities/user.entity";
 import { AppDataSource } from './utils/app-data-source';
 import usersRouter from "./routes/users.router";
 import authRouter from "./routes/auth.router";
@@ -27,13 +26,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-app.get("/", (req: Request, res: Response) => {
-	console.log(chalk.blue("Received a request at /"));
-	res.send("Hello, World!");
-});
-
 app.use("/users", usersRouter);
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authRouter	);
 
 app.listen(PORT, () => {
 	console.log(chalk.green(`Server is running on http://localhost:${PORT}`));
