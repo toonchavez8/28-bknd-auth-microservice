@@ -7,6 +7,8 @@ dotenv.config();
 import { User } from "./entities/user.entity";
 import { AppDataSource } from './utils/app-data-source';
 import usersRouter from "./routes/users.router";
+import authRouter from "./routes/auth.router";
+
 
 const startServer = async () => {
 	try {
@@ -31,7 +33,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/users", usersRouter);
-
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => {
 	console.log(chalk.green(`Server is running on http://localhost:${PORT}`));
